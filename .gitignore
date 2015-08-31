@@ -39,6 +39,8 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+
+RPUD.gdb/
 nosetests.xml
 coverage.xml
 *,cover
