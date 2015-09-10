@@ -28,10 +28,22 @@ count = int(result.getOutput(0))
 print '%d system valves diameters are null' % count
 
 #Create search cursor on selected valves
+report = {
+    "good": 0,
+    "bad": 0
+}
+
 fields = ['FACILITYID', 'DIAMETER', 'SHAPE@']
 with arcpy.da.SearchCursor('sValves', fields) as sCursor:
     for row in sCursor:
         point = row[2]
         arcpy.SelectLayerByLocation_management('pMain', 'intersect', point, selection_type='NEW_SELECTION')
-        print int(arcpy.GetCount_management('pMain').getOutput(0))
+        mainCount = int(arcpy.GetCount_management('pMain').getOutput(0))
+        if mainCount > 0 and mainCount < 3:
+            report['good']+=1
+        else:
+            report['bad']+=1
+
+print 'Good: %d\nBad: %d' % (report['good'], report['bad'])
+
         # print('{0}, {1}'.format(row[0], row[1]))
