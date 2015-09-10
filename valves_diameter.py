@@ -14,6 +14,9 @@ systemValves = 'wSystemValve'
 contorlValves = 'wControlValve'
 pressureMain = 'wPressureMain'
 
+#Make Pressure Main Feature Layer
+arcpy.MakeFeatureLayer_management (pressureMain, "pMain")
+
 #Select Valves with null diameter
 arcpy.MakeFeatureLayer_management (systemValves, "sValves")
 arcpy.SelectLayerByAttribute_management ("sValves", "NEW_SELECTION", " DIAMETER IS NULL ")
@@ -25,7 +28,10 @@ count = int(result.getOutput(0))
 print '%d system valves diameters are null' % count
 
 #Create search cursor on selected valves
-fields = ['FACILITYID', 'DIAMETER']
+fields = ['FACILITYID', 'DIAMETER', 'SHAPE@']
 with arcpy.da.SearchCursor('sValves', fields) as sCursor:
     for row in sCursor:
-        print('{0}, {1}'.format(row[0], row[1]))
+        point = row[2]
+        arcpy.SelectLayerByLocation_management('pMain', 'intersect', point, selection_type='NEW_SELECTION')
+        print int(arcpy.GetCount_management('pMain').getOutput(0))
+        # print('{0}, {1}'.format(row[0], row[1]))
